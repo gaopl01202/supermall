@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from 'vue';
 import {Swipe, SwipeItem} from 'vant';
 import {Lazyload} from 'vant';
 

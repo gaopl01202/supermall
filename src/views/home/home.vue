@@ -1,15 +1,47 @@
 <template>
   <div>
+
+    <!--    轮播图-->
     <home-swipe :banners="banners"></home-swipe>
+    <!--    推荐-->
     <home-recommend :recommends="recommends"></home-recommend>
+    <!--    本周流行-->
+    <feature-view style="margin-top: 10px"></feature-view>
+    <!--    tab分类-->
+
+    <home-tabs @tabType="tabClick" style="margin-top: -3px">
+      <keep-alive>
+        <van-list
+          v-model="loading"
+          :finished="finished"
+          @load="onLoad(type)">
+          <goods-list :goods-list="showGoods" :key="type"></goods-list>
+        </van-list>
+      </keep-alive>
+    </home-tabs>
+
+
   </div>
 </template>
 
 <script>
 
-import {getHomeMultidata} from "@/network/home";
+import {getHomeMultidata, getHomeGoods} from "@/network/home";
 import HomeSwipe from "@/views/home/childComps/HomeSwipe";
 import HomeRecommend from "@/views/home/childComps/HomeRecommend";
+import FeatureView from "@/views/home/childComps/FeatureView";
+import HomeTabs from "@/views/home/childComps/HomeTabs";
+import testlist from "@/views/home/childComps/testlist";
+import test from "@/views/test/test";
+//引入商品列表数据展示组件
+import GoodsList from "@/components/content/goods/GoodsList";
+//引入滚动组件
+import Scroll from "@/components/common/scroll/Scroll";
+//引入列表加载
+import Vue from 'vue';
+import {List} from 'vant';
+
+Vue.use(List);
 
 export default {
   name: "home",
@@ -17,23 +49,75 @@ export default {
     return {
       banners: [],
       recommends: [],
+      goods: {
+        'pop': {page: 0, list: []},
+        'new': {page: 0, list: []},
+        'sell': {page: 0, list: []},
+      },
+      type: 'pop',
+      loading: false,
+      finished: false
     }
   },
-
-  methods: {},
+  computed: {
+    showGoods() {
+      return this.goods[this.type].list
+    }
+  },
+  methods: {
+    tabClick(tabType) {
+      this.type = tabType;
+      // this.getHomeGoods(tabType)
+      //   this.onLoad(tabType)
+    },
+    onLoad(type) {
+      // this.getHomeGoods(type)
+      // console.log(type);
+      // this.loading = false
+      const page = this.goods[type].page + 1
+      getHomeGoods(type, page).then(res => {
+        this.goods[type].list.push(...res.data.list)
+        this.goods[type].page = page
+        // console.log(res)
+        this.loading = false
+      })
+    },
+    getHomeMultidata() {
+      getHomeMultidata().then(res => {
+        this.banners = res.data.banner.list
+        this.recommends = res.data.recommend.list
+      })
+    },
+    // getHomeGoods(type) {
+    //   const page = this.goods[type].page + 1
+    //   getHomeGoods(type, page).then(res => {
+    //     this.goods[type].list.push(...res.data.list)
+    //     this.goods[type].page = page
+    //     console.log(res)
+    //   })
+    // }
+  },
   components: {
     HomeSwipe,
-    HomeRecommend
+    HomeRecommend,
+    FeatureView,
+    HomeTabs,
+    testlist,
+    test,
+    GoodsList,
+    Scroll
   },
   created() {
-    // 1、请求多个数据
-    getHomeMultidata().then(res => {
-      this.banners = res.data.banner.list
-      this.recommends = res.data.recommend.list
-    })
-  }
+    // 1、请求多个数据(轮播图等)
+    this.getHomeMultidata()
+    // 2、请求商品信息
+    // this.getHomeGoods('pop')
+    // this.getHomeGoods('new')
+    // this.getHomeGoods('sell')
+  },
 }
 </script>
 
 <style scoped>
+
 </style>
