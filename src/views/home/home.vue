@@ -8,17 +8,15 @@
     <!--    本周流行-->
     <feature-view style="margin-top: 10px"></feature-view>
     <!--    tab分类-->
-
     <home-tabs @tabType="tabClick" style="margin-top: -3px">
-      <keep-alive>
-        <van-list
-          v-model="loading"
-          :finished="finished"
-          @load="onLoad(type)">
-          <goods-list :goods-list="showGoods" :key="type"></goods-list>
-        </van-list>
-      </keep-alive>
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        @load="onLoad(type)">
+        <goods-list :goods-list="showGoods" :key="type"></goods-list>
+      </van-list>
     </home-tabs>
+    <back-top></back-top>
 
 
   </div>
@@ -40,6 +38,9 @@ import Scroll from "@/components/common/scroll/Scroll";
 //引入列表加载
 import Vue from 'vue';
 import {List} from 'vant';
+//引入点击向上
+import backTop from "@/components/content/backTop/backTop";
+
 
 Vue.use(List);
 
@@ -56,7 +57,8 @@ export default {
       },
       type: 'pop',
       loading: false,
-      finished: false
+      finished: false,
+      scrollTop: null
     }
   },
   computed: {
@@ -64,21 +66,27 @@ export default {
       return this.goods[this.type].list
     }
   },
+  mounted() {
+
+  },
+  activated() {
+    window.addEventListener('scroll', this.watchScroll,)
+    document.documentElement.scrollTop =  this.scrollTop
+  },
+  deactivated() {
+
+    window.removeEventListener('scroll', this.scrollToTop)
+
+  },
   methods: {
     tabClick(tabType) {
       this.type = tabType;
-      // this.getHomeGoods(tabType)
-      //   this.onLoad(tabType)
     },
     onLoad(type) {
-      // this.getHomeGoods(type)
-      // console.log(type);
-      // this.loading = false
       const page = this.goods[type].page + 1
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page = page
-        // console.log(res)
         this.loading = false
       })
     },
@@ -96,6 +104,12 @@ export default {
     //     console.log(res)
     //   })
     // }
+    watchScroll(){
+      if (document.documentElement.scrollTop != 0){
+        this.scrollTop = document.documentElement.scrollTop
+      }
+
+    }
   },
   components: {
     HomeSwipe,
@@ -105,7 +119,8 @@ export default {
     testlist,
     test,
     GoodsList,
-    Scroll
+    Scroll,
+    backTop
   },
   created() {
     // 1、请求多个数据(轮播图等)
@@ -115,6 +130,9 @@ export default {
     // this.getHomeGoods('new')
     // this.getHomeGoods('sell')
   },
+  destroyed() {
+    console.log('销毁');
+  }
 }
 </script>
 
