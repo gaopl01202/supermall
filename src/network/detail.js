@@ -15,6 +15,18 @@ export function getRecommend(){
   })
 }
 
+let timer = null
+export function debounce(func) {
+  return function () {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      console.log(timer);
+      func.apply(this)
+    }, 500)
+  }
+}
+
+
 export class goods{
   constructor(detailInfo){
     this.topImages = detailInfo.itemInfo.topImages

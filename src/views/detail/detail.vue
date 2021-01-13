@@ -1,21 +1,24 @@
 <template>
   <div>
     <!--    顶部导航-->
-    <detail-nav-bar></detail-nav-bar>
+    <detail-nav-bar @clicktabs="clicktabs" style="height: 46px" :activetab="activetab"></detail-nav-bar>
     <!--    轮播图-->
-    <detail-swipe :detail-images="goodsInfo.topImages"></detail-swipe>
-    <!--    商品基础信息-->
-    <detail-base-info :base-info="goodsInfo"></detail-base-info>
-    <!--    店铺信息-->
-    <detail-shop-info :shopInfo="goodsInfo"></detail-shop-info>
-    <!--    商品详情展示-->
-    <detail-show :goods-info="goodsInfo"></detail-show>
-    <!--    商品参数展示-->
-    <detail-params :goods-info="goodsInfo"></detail-params>
-    <!--    评价-->
-    <detail-rate :goods-info="goodsInfo.rate"></detail-rate>
-    <!--    推荐商品-->
-    <goods-list :goods-list="recommendGoods"></goods-list>
+    <div>
+      <detail-swipe :detail-images="goodsInfo.topImages" id="baseinfo"></detail-swipe>
+      <!--    商品基础信息-->
+      <detail-base-info :base-info="goodsInfo"></detail-base-info>
+      <!--    店铺信息-->
+      <detail-shop-info :shopInfo="goodsInfo"></detail-shop-info>
+      <!--    商品详情展示-->
+      <detail-show :goods-info="goodsInfo"></detail-show>
+      <!--    商品参数展示-->
+      <detail-params :goods-info="goodsInfo" id="pararms"></detail-params>
+      <!--    评价-->
+      <detail-rate :goods-info="goodsInfo.rate" id="rate"></detail-rate>
+      <!--    推荐商品-->
+      <goods-list :goods-list="recommendGoods" id="recommend"></goods-list>
+    </div>
+
     <!--    底部菜单-->
     <detail-goods-action style="height: 50px"></detail-goods-action>
   </div>
@@ -24,7 +27,7 @@
 <script>
 import DetailNavBar from "@/views/detail/childComps/DetailNavBar";
 import DetailGoodsAction from "@/views/detail/childComps/DetailGoodsAction";
-import {getDetail, getRecommend, goods} from '@/network/detail'
+import {getDetail, getRecommend, goods,debounce} from '@/network/detail';
 import DetailSwipe from "@/views/detail/childComps/DetailSwipe";
 import DetailBaseInfo from "@/views/detail/childComps/DetailBaseInfo";
 import DetailShopInfo from "@/views/detail/childComps/DetailShopInfo";
@@ -39,8 +42,93 @@ export default {
     return {
       iid: null,
       goodsInfo: {},
-      recommendGoods: []
+      recommendGoods: [],
+      scrollTop: 0,
+      baseinfoScroll: 0,
+      pararmsScroll: 0,
+      rateScroll: 0,
+      recommendScroll: 0
     }
+  },
+  methods: {
+    setScroll() {
+      this.baseinfoScroll = document.getElementById('baseinfo').offsetTop - 46
+      this.pararmsScroll = document.getElementById('pararms').offsetTop - 46
+      this.rateScroll = document.getElementById('rate').offsetTop - 46
+      this.recommendScroll = document.getElementById('recommend').offsetTop - 46
+
+      console.log('-----------' + this.baseinfoScroll);
+    },
+    clicktabs(name) {
+      this.setScroll()
+      switch (name) {
+        case 'baseinfo':
+          document.documentElement.scrollTop = this.baseinfoScroll
+          // document.documentElement.scrollTop = document.getElementById(name).offsetTop - 46
+          break
+        case 'pararms':
+          document.documentElement.scrollTop = this.pararmsScroll
+          // document.documentElement.scrollTop = document.getElementById(name).offsetTop - 46
+          break
+        case 'rate':
+          document.documentElement.scrollTop = this.rateScroll
+          // document.documentElement.scrollTop = document.getElementById(name).offsetTop - 46
+          break
+        case 'recommend':
+          document.documentElement.scrollTop = this.recommendScroll
+          // document.documentElement.scrollTop = document.getElementById(name).offsetTop - 46
+          break
+      }
+    },
+
+    watchScroll() {
+      this.scrollTop = document.documentElement.scrollTop
+      // console.log(this.scrollTop);
+      // console.log(this.activetab)
+      debounce(this.setScroll)()
+
+
+    },
+    // debounce(func) {
+    //   let timer = null
+    //
+    //   return function () {
+    //     if (timer) {
+    //       clearTimeout(timer)
+    //     }
+    //     timer = setTimeout(() => {
+    //       console.log(timer);
+    //       func.apply(this)
+    //     }, 500)
+    //   }
+    // },
+  },
+  computed: {
+    // baseinfoScroll: document.getElementById('baseinfo').offsetTop - 46,
+    // pararmsScroll: document.getElementById('pararms').offsetTop - 46,
+    // rateScroll: document.getElementById('rate').offsetTop - 46,
+    // recommendScroll: document.getElementById('recommend').offsetTop - 46,
+    activetab() {
+      if (this.scrollTop < this.pararmsScroll) {
+        return 'baseinfo'
+      } else if (this.scrollTop >= this.pararmsScroll && this.scrollTop < this.rateScroll) {
+        return 'pararms'
+      } else if (this.scrollTop >= this.rateScroll && this.scrollTop < this.recommendScroll) {
+        return 'rate'
+      } else if (this.scrollTop > this.recommendScroll) {
+        return 'recommend'
+      }
+    }
+  },
+  mounted() {
+
+  },
+  activated() {
+    window.addEventListener('scroll', this.watchScroll,)
+    document.documentElement.scrollTop = 0
+  },
+  deactivated() {
+    window.removeEventListener('scroll', this.scrollToTop)
   },
   watch: {
     $route(to, from) {
@@ -49,10 +137,19 @@ export default {
       if (this.iid) {
         getDetail(this.iid).then(res => {
           this.goodsInfo = new goods(res.result)
-          // this.initData()
         })
       }
-    }
+    },
+    // scrollTop(){
+    //   this.$nextTick(() =>{
+    //     this.setScroll()
+    //   })
+    // },
+    // scrollTop() {
+    //   const test = this.debounce(this.setScroll)
+    //   test()
+    // },
+
   },
   components: {
     DetailNavBar,

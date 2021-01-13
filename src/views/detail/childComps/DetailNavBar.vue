@@ -1,7 +1,7 @@
 <template>
   <div>
     <van-nav-bar left-arrow @click-left="goBack" fixed>
-      <detail-tabs slot="title" class="tabs"></detail-tabs>
+      <detail-tabs :activetab="activetab" slot="title" class="tabs" @clicktabs="clicktabs"></detail-tabs>
     </van-nav-bar>
   </div>
 </template>
@@ -18,9 +18,13 @@ export default {
   components: {
     DetailTabs
   },
+  props:["activetab"],
   methods: {
     goBack() {
       this.$router.back()
+    },
+    clicktabs(name) {
+      this.$emit('clicktabs',name)
     }
   }
 }

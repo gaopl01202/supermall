@@ -75,7 +75,7 @@ export default {
   },
   deactivated() {
 
-    window.removeEventListener('scroll', this.scrollToTop)
+    window.removeEventListener('scroll', this.watchScroll)
 
   },
   methods: {
