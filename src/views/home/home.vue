@@ -58,7 +58,7 @@ export default {
       type: 'pop',
       loading: false,
       finished: false,
-      scrollTop: null
+      homescrollTop: 0
     }
   },
   computed: {
@@ -70,11 +70,12 @@ export default {
 
   },
   activated() {
+    console.log("1111");
     window.addEventListener('scroll', this.watchScroll,)
     document.documentElement.scrollTop =  this.scrollTop
   },
   deactivated() {
-
+    console.log("2222");
     window.removeEventListener('scroll', this.watchScroll)
 
   },
@@ -96,19 +97,8 @@ export default {
         this.recommends = res.data.recommend.list
       })
     },
-    // getHomeGoods(type) {
-    //   const page = this.goods[type].page + 1
-    //   getHomeGoods(type, page).then(res => {
-    //     this.goods[type].list.push(...res.data.list)
-    //     this.goods[type].page = page
-    //     console.log(res)
-    //   })
-    // }
     watchScroll(){
-      if (document.documentElement.scrollTop != 0){
-        this.scrollTop = document.documentElement.scrollTop
-      }
-
+        this.homescrollTop = document.documentElement.scrollTop
     }
   },
   components: {
@@ -125,6 +115,7 @@ export default {
   created() {
     // 1、请求多个数据(轮播图等)
     this.getHomeMultidata()
+    console.log('3333');
     // 2、请求商品信息
     // this.getHomeGoods('pop')
     // this.getHomeGoods('new')
@@ -132,6 +123,7 @@ export default {
   },
   destroyed() {
     console.log('销毁');
+    window.removeEventListener('scroll', this.watchScroll)
   }
 }
 </script>

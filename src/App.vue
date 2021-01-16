@@ -1,10 +1,14 @@
 <template>
   <div id="app">
     <!--    加载其他router页面-->
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+<!--    <keep-alive>-->
+<!--      <router-view></router-view>-->
+<!--    </keep-alive>-->
 
+    <keep-alive>
+      <router-view v-if="$route.meta.isKeep"></router-view>
+    </keep-alive>
+    <router-view v-if="!$route.meta.isKeep"></router-view>
     <!--    使用tabbar-->
     <van-tabbar route fixed placeholder v-show="$route.meta.isShowTabbar">
       <van-tabbar-item name="home" replace to="/home" icon="wap-home-o">首页</van-tabbar-item>

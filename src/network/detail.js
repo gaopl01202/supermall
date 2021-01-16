@@ -52,6 +52,18 @@ export class goods{
     this.itemParamsRule = detailInfo.itemParams.rule
     //评价
     this.rate = detailInfo.rate.list[0]
-
-  }
+  };
 }
+
+// export class good{
+//   constructor(good){
+//     this.iid = good.itemInfo.iid
+//     this.title = good.itemInfo.title
+//     this.desc = good.itemInfo.desc
+//     this.price = good.itemInfo.price
+//     this.img = good.detailInfo.detailImage[0].list
+//     this.num = 1
+//   };
+// }
+
+

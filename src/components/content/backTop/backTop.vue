@@ -42,7 +42,7 @@ export default {
       //实现滚动效果
       const timeTop = setInterval(() => {
        //获取当前滚动高度，然后定时减少高度
-        document.documentElement.scrollTop = top -= 50;
+        document.documentElement.scrollTop = top -= 100;
         if (top <= 0) {
           clearInterval(timeTop);
         }

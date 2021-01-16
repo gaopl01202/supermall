@@ -18,16 +18,16 @@
       <!--    推荐商品-->
       <goods-list :goods-list="recommendGoods" id="recommend"></goods-list>
     </div>
-
+    <back-top></back-top>
     <!--    底部菜单-->
-    <detail-goods-action style="height: 50px"></detail-goods-action>
+    <detail-goods-action @addcart="addcard" style="height: 50px"></detail-goods-action>
   </div>
 </template>
 
 <script>
 import DetailNavBar from "@/views/detail/childComps/DetailNavBar";
 import DetailGoodsAction from "@/views/detail/childComps/DetailGoodsAction";
-import {getDetail, getRecommend, goods,debounce} from '@/network/detail';
+import {getDetail, getRecommend, goods, debounce} from '@/network/detail';
 import DetailSwipe from "@/views/detail/childComps/DetailSwipe";
 import DetailBaseInfo from "@/views/detail/childComps/DetailBaseInfo";
 import DetailShopInfo from "@/views/detail/childComps/DetailShopInfo";
@@ -35,9 +35,28 @@ import DetailShow from "@/views/detail/childComps/DetailShow";
 import DetailParams from "@/views/detail/childComps/DetailParams";
 import DetailRate from "@/views/detail/childComps/DetailRate";
 import GoodsList from "@/components/content/goods/GoodsList";
+import backTop from "@/components/content/backTop/backTop";
+import Vue from 'vue'
+import Vuex from 'vuex'
+import { Toast } from 'vant';
+
+Vue.use(Toast);
+Vue.use(Vuex)
 
 export default {
   name: "detail",
+  components: {
+    DetailNavBar,
+    DetailGoodsAction,
+    DetailSwipe,
+    DetailShopInfo,
+    DetailBaseInfo,
+    DetailShow,
+    DetailParams,
+    DetailRate,
+    GoodsList,
+    backTop,
+  },
   data() {
     return {
       iid: null,
@@ -47,7 +66,22 @@ export default {
       baseinfoScroll: 0,
       pararmsScroll: 0,
       rateScroll: 0,
-      recommendScroll: 0
+      recommendScroll: 0,
+      // good:{
+      //   iid:this.iid,
+      //   title:this.goodsInfo.title,
+      //   desc:this.goodsInfo.desc,
+      //   price:this.goodInfo.price,
+      //   num:1,
+      //   img:this.goodsInfo.goodsImages[0]
+      // }
+      // good:{
+      //   iid:'ajjjdas',
+      //   title:'this.goodsInfo.title',
+      //   desc:'this.goodsInfo.desc',
+      //   price:300,
+      //   num:1,
+      // }
     }
   },
   methods: {
@@ -86,22 +120,20 @@ export default {
       // console.log(this.scrollTop);
       // console.log(this.activetab)
       debounce(this.setScroll)()
-
-
     },
-    // debounce(func) {
-    //   let timer = null
-    //
-    //   return function () {
-    //     if (timer) {
-    //       clearTimeout(timer)
-    //     }
-    //     timer = setTimeout(() => {
-    //       console.log(timer);
-    //       func.apply(this)
-    //     }, 500)
-    //   }
-    // },
+    addcard(){
+      const good = {}
+      good.iid = this.iid
+      good.title = this.goodsInfo.title
+      good.desc = this.goodsInfo.desc
+      good.price = this.goodsInfo.readPrice
+      good.img = this.goodsInfo.topImages[0]
+      good.num = 1
+      good.checked = true
+      // console.log(good);
+      this.$store.dispatch('addGood',good)
+      Toast.success('添加成功');
+    }
   },
   computed: {
     // baseinfoScroll: document.getElementById('baseinfo').offsetTop - 46,
@@ -151,22 +183,13 @@ export default {
     // },
 
   },
-  components: {
-    DetailNavBar,
-    DetailGoodsAction,
-    DetailSwipe,
-    DetailShopInfo,
-    DetailBaseInfo,
-    DetailShow,
-    DetailParams,
-    DetailRate,
-    GoodsList,
-  },
+
   created() {
     document.documentElement.scrollTop = 0
     this.iid = this.$route.params.iid
     getDetail(this.iid).then(res => {
       this.goodsInfo = new goods(res.result)
+
       // this.initData()
     })
     getRecommend().then(res => {
