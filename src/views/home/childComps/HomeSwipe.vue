@@ -2,7 +2,8 @@
   <div>
     <van-swipe :autoplay="3000">
       <van-swipe-item v-for="(item, index) in banners" :key="index">
-        <img v-bind:height="imgheight" v-lazy="item.image"/>
+<!--        v-bind:height="imgheight"-->
+        <img class="img" v-lazy="item.image"/>
       </van-swipe-item>
     </van-swipe>
   </div>
@@ -37,5 +38,7 @@ export default {
 </script>
 
 <style scoped>
-
+.img{
+  height: 195px;
+}
 </style>

@@ -115,14 +115,13 @@ export default {
   created() {
     // 1、请求多个数据(轮播图等)
     this.getHomeMultidata()
-    console.log('3333');
     // 2、请求商品信息
     // this.getHomeGoods('pop')
     // this.getHomeGoods('new')
     // this.getHomeGoods('sell')
   },
   destroyed() {
-    console.log('销毁');
+    // console.log('销毁');
     window.removeEventListener('scroll', this.watchScroll)
   }
 }

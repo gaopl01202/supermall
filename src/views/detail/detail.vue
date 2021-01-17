@@ -131,8 +131,11 @@ export default {
       good.num = 1
       good.checked = true
       // console.log(good);
-      this.$store.dispatch('addGood',good)
-      Toast.success('添加成功');
+      this.$store.dispatch('addGood',good).then((res) =>{
+        // console.log(res)
+        Toast.success(res);
+      })
+
     }
   },
   computed: {
